@@ -6,6 +6,8 @@ const moment = require('moment-timezone');
 const natural = require('natural');
 const vader = require('vader-sentiment');
 const afinn = require('afinn-165');
+const fs = require('fs');
+const multer = require('multer');
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -106,6 +108,18 @@ function analyzeSentiment(responses, message) {
   return { emojiSentiment, textSentiment, overallSentiment };
 }
 
+// =================== MULTER SETUP =================== //
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'photos'));
+  },
+  filename: (req, file, cb) => {
+    const idNumber = req.params.idNumber;
+    cb(null, `${idNumber}.png`);
+  }
+});
+const upload = multer({ storage });
+
 // =================== ROUTES =================== //
 
 app.post('/api/survey', async (req, res) => {
@@ -171,7 +185,6 @@ app.post('/api/student-lookup', async (req, res) => {
 
     const student = studentResult.recordset[0];
 
-    // ✅ Count logs per section separately
     const todayLogs = await pool.request()
       .input('idNumber', sql.VarChar, idNumber)
       .input('section', sql.VarChar, section)
@@ -226,7 +239,6 @@ app.post('/api/student-lookup', async (req, res) => {
   }
 });
 
-// ✅ Updated with section filter
 app.get('/api/logins', async (req, res) => {
   const { startDate, endDate, section } = req.query;
 
@@ -321,7 +333,6 @@ app.post('/api/card-and-packet', async (req, res) => {
   try {
     const pool = await sql.connect(config);
 
-    // ✅ Check for duplicate accession number
     const checkDuplicate = await pool.request()
       .input('accessionNumber1', sql.NVarChar, accessionNumber1 || '')
       .query(`SELECT COUNT(*) AS count FROM CardAndPacket WHERE accessionNumber1 = @accessionNumber1 AND accessionNumber1 != ''`);
@@ -532,6 +543,7 @@ app.put('/api/card-and-packet/:id', async (req, res) => {
 });
 
 // =================== OFFICE SUPPLIES =================== //
+
 app.get('/api/supplies', async (req, res) => {
   try {
     const pool = await sql.connect(config);
@@ -609,7 +621,7 @@ app.delete('/api/supplies/:id', async (req, res) => {
   }
 });
 
-// ── LIBRARY EQUIPMENT ──────────────────────────────────────────────
+// =================== LIBRARY EQUIPMENT =================== //
 
 app.get('/api/equipment', async (req, res) => {
   try {
@@ -688,6 +700,24 @@ app.delete('/api/equipment/:id', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to delete equipment' });
+  }
+});
+
+// =================== PHOTOS =================== //
+
+// Upload photo
+app.post('/api/photos/:idNumber', upload.single('photo'), (req, res) => {
+  res.json({ message: 'Photo uploaded successfully!' });
+});
+
+// Get photo
+app.get('/api/photos/:idNumber', (req, res) => {
+  const { idNumber } = req.params;
+  const filePath = path.join(__dirname, 'photos', `${idNumber}.png`);
+  if (fs.existsSync(filePath)) {
+    res.sendFile(filePath);
+  } else {
+    res.status(404).json({ message: 'Photo not found' });
   }
 });
 
