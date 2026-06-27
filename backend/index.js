@@ -44,6 +44,9 @@ classifier.addDocument('love the library always clean and quiet perfect for stud
 classifier.addDocument('fantastic collection helpful librarians outstanding service', 'Positive');
 classifier.addDocument('very pleased with the resources available exceeded expectations', 'Positive');
 classifier.addDocument('best library experience staff went above and beyond', 'Positive');
+classifier.addDocument('books are well maintained and easy to find', 'Positive');
+classifier.addDocument('librarians are very accommodating and knowledgeable', 'Positive');
+
 
 classifier.addDocument('library is okay nothing special average experience', 'Neutral');
 classifier.addDocument('services are acceptable could be better but not bad', 'Neutral');
@@ -52,6 +55,8 @@ classifier.addDocument('decent collection average staff response time', 'Neutral
 classifier.addDocument('neither good nor bad just a regular visit', 'Neutral');
 classifier.addDocument('some things were good some were not satisfactory', 'Neutral');
 classifier.addDocument('average overall not impressed but not disappointed', 'Neutral');
+classifier.addDocument('the library is okay but could use more computers', 'Neutral');
+
 
 classifier.addDocument('poor service staff were unhelpful very disappointing', 'Negative');
 classifier.addDocument('terrible experience resources outdated disorganized', 'Negative');
@@ -60,6 +65,10 @@ classifier.addDocument('bad environment noisy dirty not comfortable at all', 'Ne
 classifier.addDocument('worst library experience hard to find books no assistance', 'Negative');
 classifier.addDocument('frustrated with the service slow and unresponsive staff', 'Negative');
 classifier.addDocument('highly disappointed lacks resources and poor management', 'Negative');
+classifier.addDocument('books are outdated and hard to find', 'Negative');
+classifier.addDocument('no available computers and slow internet', 'Negative');
+classifier.addDocument('librarians were not helpful and ignored my questions', 'Negative');
+
 
 classifier.train();
 
